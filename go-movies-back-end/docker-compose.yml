@@ -1,0 +1,24 @@
+version: '3'  # Используемая версия синтаксиса Docker Compose.
+
+services:  # Описание сервисов.
+
+  postgres:  # Название сервиса - PostgreSQL.
+    image: 'postgres:14.5'  # Используемый образ Docker для создания контейнера PostgreSQL. В данном случае, версия 14.5.
+    restart: always  # Настройка перезапуска контейнера в случае ошибок или остановки.
+
+    environment:  # Переменные среды, необходимые для настройки PostgreSQL.
+      POSTGRES_USER: postgres  # Имя пользователя базы данных PostgreSQL.
+      POSTGRES_PASSWORD: postgres  # Пароль для пользователя базы данных PostgreSQL.
+      POSTGRES_DB: movies  # Имя базы данных, которая будет создана.
+
+    logging:  # Настройки логирования для контейнера.
+      options:  # Дополнительные опции для логирования.
+        max-size: 10m  # Максимальный размер файла логов.
+        max-file: "3"  # Максимальное количество файлов логов.
+
+    ports:  # Перенаправление портов машины хоста на порты контейнера.
+      - '5432:5432'  # Перенаправление порта 5432 (стандартный порт PostgreSQL) машины хоста на порт 5432 контейнера.
+
+    volumes:  # Монтирование томов (директорий или файлов) для хранения данных между контейнером и хостом.
+      - ./postgres-data:/var/lib/postgresql/data  # Монтирование директории ./postgres-data на хосте в /var/lib/postgresql/data в контейнере, где хранятся данные PostgreSQL.
+      - ./sql/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql  # Монтирование файла create_tables.sql из директории ./sql на хосте в /docker-entrypoint-initdb.d/create_tables.sql в контейнере. Файл будет выполнен при инициализации базы данных.
